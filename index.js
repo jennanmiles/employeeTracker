@@ -52,10 +52,12 @@ function promptUser () {
       
             case "Add Employee":
               //function 
+              addEmployee();
               break;
       
             case "Remove Employee":
               //function 
+              removeEmployee();
               break;
 
             case "Update Employee Role":
@@ -101,18 +103,69 @@ function viewByManager () {
 }
 
 function addEmployee () {
-    let query = "";
-    connection.query(query, function(err,res) {
-        console.log(res);
-        promptUser();
+    inquirer.prompt([
+        {
+            name: 'first_name',
+            type: 'input',
+            message: "Enter employee's first name"
+        },
+        {
+            name: 'last_name',
+            type: 'input',
+            message: "Enter employee's last name"
+        },
+        {
+            name: 'role',
+            type: 'checkbox',
+            message: "enter 1 for development dept, 2 for design dept, 3 for content dept",
+            choices: [
+                1,
+                2,
+                3
+            ]
+        }, 
+        {
+            name: 'manager',
+            type: 'input',
+            messsage: "Enter employee's manager"
+        }
+    ]).then(function(answer) {
+        console.log(answer);
+        let query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
+        connection.query(query, [answer.first_name, answer.last_name, answer.role, answer.manager], function(err,res) {
+            if (err) {
+                console.log('error');
+            } else {
+                console.log('success');
+            }
+            promptUser();
+        });
     });
 }
 
 function removeEmployee () {
-    let query = "";
-    connection.query(query, function(err,res) {
-        console.log(res);
-        promptUser();
+    inquirer.prompt([
+        {
+            name: 'first_name',
+            type: 'input',
+            message: "Enter employee's first name that you'd like to remove"
+        },
+        {
+            name: 'last_name',
+            type: 'input',
+            message: "Enter employee's last name that you'd like to remove"
+        } 
+    ]).then(function(answer) {
+        let query = "DELETE FROM employee WHERE first_name = ? AND last_name = ?";
+        connection.query(query, [answer.first_name, answer.last_name], function(err,res) {
+            console.log(res);
+            if (err) {
+                console.log('error');
+            } else {
+                console.log('success');
+            }
+            promptUser();
+        });
     });
 }
 
